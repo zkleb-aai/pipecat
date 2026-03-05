@@ -54,12 +54,10 @@ transport_params = {
 async def run_bot(transport: BaseTransport, runner_args: RunnerArguments):
     logger.info(f"Starting bot")
 
-    # Align VAD thresholds to 0.3 for optimal performance
     stt = AssemblyAISTTService(
         api_key=os.getenv("ASSEMBLYAI_API_KEY"),
         connection_params=AssemblyAIConnectionParams(
             speech_model="u3-rt-pro",
-            vad_threshold=0.3,  # Match with Silero VAD
         ),
     )
 
@@ -76,11 +74,7 @@ async def run_bot(transport: BaseTransport, runner_args: RunnerArguments):
     context = LLMContext()
     user_aggregator, assistant_aggregator = LLMContextAggregatorPair(
         context,
-        user_params=LLMUserAggregatorParams(
-            vad_analyzer=SileroVADAnalyzer(
-                params=VADParams(confidence=0.3)  # Match with AssemblyAI
-            )
-        ),
+        user_params=LLMUserAggregatorParams(vad_analyzer=SileroVADAnalyzer()),
     )
 
     pipeline = Pipeline(
